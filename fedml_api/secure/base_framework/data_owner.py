@@ -24,8 +24,6 @@ class DataOwner:
         """Build local data pipeline for federated DataOwners."""
 
         def normalize(image, label):
-            print("image:")
-            print(image)
             # image = image.type(torch.FloatTensor) / 255.0  # torch.float32
             image = tf.cast(image, tf.float32) / 255.0
             return image, label

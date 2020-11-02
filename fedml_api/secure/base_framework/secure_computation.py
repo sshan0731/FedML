@@ -3,12 +3,10 @@ from fedml_api.secure.base_framework.data_owner import DataOwner
 import logging
 import sys
 import argparse
-
 import numpy as np
 import torch
 import tf_encrypted as tfe
 from fedml_api.secure.base_framework.encryption_util import encode
-
 from fedml_api.data_preprocessing.MNIST.data_loader import load_partition_data_mnist
 
 
@@ -19,10 +17,24 @@ def load_data(args, dataset_name):
         train_data_local_num_dict, train_data_local_dict, test_data_local_dict, \
         class_num = load_partition_data_mnist(args.batch_size)
         args.client_num_in_total = client_num
-    #     todo: transfer to encrypted data
+
     dataset = [train_data_num, test_data_num, train_data_global, test_data_global,
                train_data_local_num_dict, train_data_local_dict, test_data_local_dict, class_num]
     return dataset
+
+
+def encode_data_dict(data_dict, data_num, class_num):
+    encrypted_training_data_list = list()
+    for i in range(len(data_dict)):
+        for idx, (x, labels) in enumerate(data_dict[i]):
+            # todo: add encode function
+            encrypted_data = encode(x, labels)
+            encrypted_training_data_list.append(encrypted_data)
+    batch_size = data_num / class_num
+    encrypted_data_dict = dict()
+    for i in range(class_num):
+        encrypted_data_dict[i] = encrypted_training_data_list[i * batch_size: (i + 1) * batch_size]
+    return encrypted_data_dict
 
 
 def add_args(parser):
@@ -36,7 +48,7 @@ def add_args(parser):
     parser.add_argument('--data_dir', type=str, default='./../../../data/MNIST',
                         help='data directory')
     parser.add_argument('--batch_size', type=int, default=1280, metavar='N',
-                        help='input batch size for training (default: 64)')
+                        help='input batch size for training (default: 1280)')
     return parser.parse_args()
 
 
@@ -59,23 +71,15 @@ if __name__ == "__main__":
         = load_data(args, args.dataset)
 
     # encrypt data
-    train_encrypted_data_local_dict = dict()
-    for data_owner_idx in train_data_local_dict:  # key: client id
-        encrypted_batch_data = list()
-        i = 0
-        for (x, y) in train_data_local_dict[data_owner_idx]:
-            enc_xy = encode(x[i].numpy(), y[i].numpy())
-            encrypted_batch_data.append(enc_xy.SerializeToString())
-            i = i + 1
-        train_encrypted_data_local_dict[data_owner_idx] = encrypted_batch_data
+    encrypted_training_data_dict = encode_data_dict(train_data_local_dict, train_data_num, class_num)
+    encrypted_test_data_dict = encode_data_dict(test_data_local_dict, test_data_num, class_num)
 
     model_owner = ModelOwner("model-owner")
     data_owners = []
     for owner_idx in range(class_num):
-
-        data_owner = DataOwner(owner_idx, train_encrypted_data_local_dict[owner_idx], model_owner.build_update_step)
+        data_owner = DataOwner(owner_idx, encrypted_training_data_dict[owner_idx], model_owner.build_update_step)
         data_owners.append(data_owner)
-
+    # todo: compute_gradient-->_build_data_pipeline decode
     model_grads = zip(*(data_owner.compute_gradient() for data_owner in data_owners))
 
     aggregated_model_grads = [
