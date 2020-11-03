@@ -28,11 +28,16 @@ class DataOwner:
             image = tf.cast(image, tf.float32) / 255.0
             return image, label
 
-        dataset = tf.data.Dataset.from_tensor_slices(self.local_data)
-        dataset = dataset.map(decode)
-        dataset = dataset.map(normalize)
-        dataset = dataset.repeat()
-        dataset = dataset.batch(self.BATCH_SIZE)
+        # dataset = tf.data.Dataset.from_tensor_slices(self.local_data)
+        dataset = list()
+        for encoded_data in self.local_data:
+            x, labels = decode(encoded_data)
+            x, labels = normalize(x, labels)
+            dataset.append(x, labels)
+        # todo: transfer tensorflow to pytorch
+        # dataset = dataset.map(normalize)
+        # dataset = dataset.repeat()
+        # dataset = dataset.batch(self.BATCH_SIZE)
         for next_element in dataset:
             yield next_element
 
