@@ -1,8 +1,8 @@
 import unittest
 from unittest import main, TestCase, TestSuite
 from binascii import unhexlify
-from fedml_api.model.secure.model.secret_sharing import Shamir, _Element, _mult_gf2, _div_gf2
-from fedml_api.model.secure.secure_computation_utils import number_size, b, bchr
+from fedml_core.secure.primitives.secret_sharing import Shamir, _Element, _mult_gf2, _div_gf2
+from fedml_core.secure.primitives.secure_utils import number_size, b, bchr
 
 
 class GF2_Tests(TestCase):
@@ -35,7 +35,6 @@ class GF2_Tests(TestCase):
         self.assertEqual(w, z)
 
     def test_div_gf2(self):
-        # from Crypto.Util.number import size as deg
 
         x, y = _div_gf2(567, 7)
         self.assertGreater(number_size(7), number_size(y))

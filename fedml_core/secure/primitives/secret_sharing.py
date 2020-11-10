@@ -1,5 +1,5 @@
 import secrets
-from fedml_api.model.secure.secure_computation_utils import is_native_int, long_to_bytes, bytes_to_long, number_size
+from fedml_core.secure.primitives.secure_utils import is_native_int, long_to_bytes, bytes_to_long, number_size
 
 
 def _mult_gf2(f1, f2):
@@ -148,7 +148,7 @@ class Shamir(object):
             The number of shares that this method will create.
           secret (byte string):
             A byte string of 16 bytes (e.g. the AES 128 key).
-          ssss (bool):
+          ssss (bool): (Shamir's Secret Sharing Scheme)
             If ``True``, the shares can be used with the ``ssss`` utility.
             Default: ``False``.
 
