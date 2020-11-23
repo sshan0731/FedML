@@ -166,7 +166,7 @@ class Shamir(object):
         #
         # c_0 is the encoded secret
         #
-
+        # get_random_bytes
         coeffs = [_Element(secrets.token_bytes(16)) for i in range(k - 1)]
         coeffs.append(_Element(secret))
 
