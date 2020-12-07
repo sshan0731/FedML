@@ -1,7 +1,7 @@
 #			   Apache License
 #         Version 2.0, January 2004
 #     Copyright 2015 Amirali Sanatinia
-#       https://github.com/amiralis/pyDH
+#     https://github.com/amiralis/pyDH
 
 """ Pure Python Diffie Hellman implementation """
 
