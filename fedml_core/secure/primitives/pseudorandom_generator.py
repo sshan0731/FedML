@@ -1,8 +1,8 @@
 import secrets
-# use "pip install pycryptodomex" to install this package instead of "pip install pycryptodome"
-from Cryptodome.Cipher import AES
-from base64 import b64encode
-import fedml_core.secure.primitives.AES_encryption as fedml_AES
+import randomgen as rg
+import warnings
+
+warnings.filterwarnings("ignore", "Generator", FutureWarning)
 
 
 def random_bytes(n=None):
@@ -12,15 +12,16 @@ def random_bytes(n=None):
     return secrets.token_bytes(n)
 
 
-def aes_random(plaintext_data):
-    key = random_bytes(16)
-    encrypter, nonce = fedml_AES.create_AES_encrypter(key, AES.MODE_CTR)
-    ciphertext = fedml_AES.ctr_mode_encrypt(encrypter, plaintext_data)
-    num = b64encode(ciphertext).decode('utf-8')
-    return num
+def aes_random_integer(aes_seed, low, high, size=None):
+    """
+    Return random integers from `low` (inclusive) to `high` (exclusive)
+    """
+    generator = rg.Generator(rg.AESCounter(aes_seed, mode="legacy"))
+    random_integer = generator.integers(low, high, size)
+    return random_integer
 
 
 if __name__ == '__main__':
-    print(random_bytes(16))
-    data = b'pseudorandom generator - aes encryption test'
-    print(aes_random(data))
+    seed = 99  # np.random.randint(0, 10000)
+    print(aes_random_integer(seed, 0, 1000))
+    print(aes_random_integer(seed, 0, 1000, size=10))
