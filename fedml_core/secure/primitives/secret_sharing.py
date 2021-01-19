@@ -1,6 +1,6 @@
 import secrets
 from fedml_core.secure.primitives.secure_utils import is_native_int, long_to_bytes, bytes_to_long, number_size
-
+# https://www.pycryptodome.org/en/latest/src/protocol/ss.html#
 
 def _mult_gf2(f1, f2):
     """Multiply two polynomials in GF(2)"""
