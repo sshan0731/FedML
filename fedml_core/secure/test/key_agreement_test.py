@@ -1,6 +1,7 @@
 # import sys
+# sys.path.append('./Fed_Secure/FedML')
+
 from fedml_core.secure.primitives.key_agreement import DiffieHellman
-# sys.path.append('.')
 
 def test_pydh_keygen():
     d1 = DiffieHellman()

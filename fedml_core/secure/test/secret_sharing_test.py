@@ -4,7 +4,6 @@ from binascii import unhexlify
 from fedml_core.secure.primitives.secret_sharing import Shamir, _Element, _mult_gf2, _div_gf2
 from fedml_core.secure.primitives.secure_utils import number_size, b, bchr
 
-
 class GF2_Tests(TestCase):
 
     def test_mult_gf2(self):
@@ -216,8 +215,20 @@ class Shamir_Tests(TestCase):
     def test5(self):
         # Detect duplicate shares
         secret = unhexlify(b("000102030405060708090a0b0c0d0e0f"))
-
+        print(secret)
+        secret_2 = 5233100606242806050955395731361295
+        print('secrete 2 {}'.format(secret_2))
         shares = Shamir.split(2, 3, secret)
+        print(shares)
+        shares[2] = (4, shares[2][1])
+        secret2 = Shamir.combine(shares[0:2])
+        print(secret2)        
+        secret3 = Shamir.combine(shares[1:3])
+        print(secret3)
+        import pdb; pdb.set_trace()
+        shares_2 = Shamir.split(2, 3, secret_2.hex())
+        self.assertEqual(shares[0], shares_2[0])
+
         self.assertRaises(ValueError, Shamir.combine, (shares[0], shares[0]))
 
 

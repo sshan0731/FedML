@@ -68,6 +68,10 @@ class DiffieHellman:
     def get_private_key(self):
         """ Return the private key (a) """
         return self.__a
+    
+    def assign_private_key(self, a):
+        """ Assign the private key (a) """
+        self.__a = a
 
     def gen_public_key(self):
         """ Return A, A = g ^ a mod p """

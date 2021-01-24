@@ -1,6 +1,7 @@
 # use "pip install pycryptodomex" to install this package instead of "pip install pycryptodome"
 import secrets
 from Cryptodome.Cipher import AES
+from binascii import unhexlify
 
 
 def create_AES_encrypter(key, mode):
@@ -43,16 +44,18 @@ def verify(encrypter, tag):
 
 if __name__ == '__main__':
     key = secrets.token_bytes(16)  # for AES-GCM with 128 bit keys
+    key = unhexlify('d1b85afec2794f9673a08f8965b47e6a3a1ae1218cc803690de5e19f3963c464')
     # encrypt
     mode = AES.MODE_GCM
     encrypter, nonce = create_AES_encrypter(key, mode)
-    data = b'AES encryption test: encrypted with a sixteen byte key'
-    ciphertext, tag = encrypt(encrypter, data)
-
+    data = '1 3 199440227064449254913935221915006528141 118437970611692378107116866343157382145'
+    ciphertext, tag = encrypt(encrypter, data.encode('utf-8'))
+    print(ciphertext)
     decrypter = create_AES_decrypter(key, mode, nonce)
     plaintext = decrypt(decrypter, ciphertext)
+    print(plaintext)
 
-    assert plaintext == data
+    assert plaintext.decode() == data
     try:
         verify(decrypter, tag)
         print("The message is authentic:", plaintext)
